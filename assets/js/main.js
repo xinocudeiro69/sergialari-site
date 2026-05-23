@@ -1,14 +1,19 @@
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  try{
-    const ok = localStorage.getItem('cookieConsent')==='true';
-    const c = document.getElementById('cookie');
-    if(c && !ok){
-      c.style.display='block';
-      document.getElementById('cookie-accept').onclick=()=>{localStorage.setItem('cookieConsent','true'); c.style.display='none';};
-      document.getElementById('cookie-config').onclick=()=>alert('Usamos solo cookies técnicas.');
-    }
-  }catch(e){}
+  var c = document.getElementById('cookie');
+  if(!c) return;
+  var accepted = false;
+  try{ accepted = localStorage.getItem('cookieConsent')==='true'; }catch(e){}
+  if(accepted) return;
+  c.style.display = 'block';
+  var btnAcept = document.getElementById('cookie-accept');
+  var btnConf  = document.getElementById('cookie-config');
+  function accept(){
+    c.style.display = 'none';
+    try{ localStorage.setItem('cookieConsent','true'); }catch(e){}
+  }
+  if(btnAcept) btnAcept.onclick = accept;
+  if(btnConf)  btnConf.onclick  = accept;
 });
 function showStep(n){['step-1','step-2','step-3','step-done'].forEach(id=>{const el=document.getElementById(id); if(el) el.style.display='none';}); const t=document.getElementById('step-'+n); if(t) t.style.display='block';}
 function nextStep(s){ if(s===1){if(!document.getElementById('name').value.trim()) return alert('Pon tu nombre 🙂'); showStep(2);} if(s===2){if(!document.getElementById('location').value.trim()) return alert('Dime de dónde eres 🙂'); showStep(3);} }
