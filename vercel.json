@@ -1,7 +1,3 @@
 {
-  "functions": {
-    "api/subscribe.js": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "outputDirectory": "."
 }
