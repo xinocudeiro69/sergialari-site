@@ -113,22 +113,44 @@ function testNext(){
 function testBack(){ if (testIdx > 0){ testIdx--; testRender(); } }
 function testResultado(){
   var puntos = 0;
+  var mejoras = [];
+  var tips = {
+    cepillados: {icon:'🪥', texto:'<strong>Cepíllate al menos dos veces al día</strong>, sobre todo por la noche. La placa bacteriana tarda entre 24 y 48 horas en endurecerse y convertirse en sarro, que solo se puede eliminar en clínica.'},
+    interprox:  {icon:'🧵', texto:'<strong>Usa hilo dental o irrigador al menos 4 días por semana.</strong> El cepillo solo llega al 60% de la superficie del diente. Los espacios entre dientes son donde más empiezan caries y enfermedad de encías.'},
+    lengua:     {icon:'👅', texto:'<strong>Limpia la lengua cada día.</strong> Acumula millones de bacterias que causan mal aliento. Un raspalenguas cuesta menos de 5€ y cambia mucho la sensación de boca limpia.'},
+    azucar:     {icon:'🍬', texto:'<strong>Reduce el picoteo dulce entre horas.</strong> No es tanto la cantidad como la frecuencia: cada vez que tomas azúcar la boca tarda una hora en recuperar el pH normal. Reserva lo dulce para las comidas principales.'},
+    recambio:   {icon:'🔄', texto:'<strong>Cambia el cepillo cada 3 meses.</strong> Las cerdas desgastadas no limpian bien y pueden irritar las encías. Si usas eléctrico, el cabezal también.'},
+    revision:   {icon:'🦷', texto:'<strong>Haz una revisión este año.</strong> Las caries iniciales y la gingivitis no duelen. Detectarlos a tiempo significa tratamientos más sencillos y baratos.'}
+  };
   testSteps.forEach(function(s){
     var v = testAnswers[s.name] || 'no';
-    if (s.invert ? v === 'no' : v === 'si') puntos++;
+    var positivo = s.invert ? (v === 'no') : (v === 'si');
+    if(positivo){ puntos++; } else { mejoras.push(tips[s.name]); }
   });
-  var nivel, msg;
-  if (puntos >= 5){ nivel = '¡Muy bien!'; msg = 'Tu rutina va por buen camino. Mantén los hábitos y revisa con tu dentista cada 6–12 meses.'; }
-  else if (puntos >= 3){ nivel = 'Mejorable'; msg = 'Hay puntos a reforzar: hilo/irrigador, limpieza de lengua y reducir azúcares entre horas.'; }
-  else { nivel = 'Necesita atención'; msg = 'Te vendría bien un repaso completo de hábitos y probablemente una limpieza profesional.'; }
-  var html = '<h2 style="margin:0 0 8px">' + nivel + '</h2><p>' + msg + '</p>' +
-    '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">' +
-    '<a class="btn" href="https://wa.me/34669033565" target="_blank" rel="noopener">Hablar con Sergi por WhatsApp</a> ' +
-    '<a class="btn secondary" href="clinica.html">Pedir cita en clínica</a>' +
-    '</div>';
+  var nivel, intro;
+  if(puntos >= 5){
+    nivel = '¡Muy bien!';
+    intro = 'Tu rutina está por encima de la media. Estás haciendo las cosas bien — mantenlo.';
+  } else if(puntos >= 3){
+    nivel = 'Hay margen de mejora';
+    intro = 'Tienes una base sólida. Con unos ajustes concretos notarás la diferencia rápido.';
+  } else {
+    nivel = 'Tu boca necesita atención';
+    intro = 'No te preocupes — con cambios de hábitos concretos puedes mejorar mucho en poco tiempo.';
+  }
+  var html = '<h3 style="margin:0 0 6px;font-size:22px">' + nivel + '</h3>';
+  html += '<p style="color:var(--ink-70);margin-bottom:' + (mejoras.length ? '16px' : '8px') + '">' + intro + '</p>';
+  if(mejoras.length){
+    html += '<p style="font-weight:800;margin:0 0 12px">Qué puedes mejorar:</p>';
+    mejoras.forEach(function(m){
+      html += '<div style="display:flex;gap:10px;margin-bottom:12px"><span style="font-size:20px;flex-shrink:0;line-height:1.5">' + m.icon + '</span><p style="margin:0;font-size:14px;color:var(--ink-70);line-height:1.55">' + m.texto + '</p></div>';
+    });
+  } else {
+    html += '<p style="color:var(--ink-70);font-size:14px">Mantén estos hábitos y visita al dentista cada 6–12 meses. ¡Sigue así!</p>';
+  }
+  html += '<p style="margin-top:14px;font-size:14px;border-top:1px solid var(--line);padding-top:12px">¿Tienes dudas sobre alguno de estos puntos? <a href="https://wa.me/34669033565" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">Escríbeme por WhatsApp</a>, sin compromiso.</p>';
   var res = document.getElementById('resultado');
   res.innerHTML = html; res.style.display = 'block';
-  res.scrollIntoView({behavior:'smooth'});
   document.getElementById('step-box').style.display = 'none';
   document.getElementById('nav-box').style.display = 'none';
 }
@@ -137,3 +159,16 @@ document.addEventListener('DOMContentLoaded', function(){
   initFaqAccordion();
   testRender();
 });
+
+/* ===== Banner CTA flotante ===== */
+(function(){
+  if(window.location.pathname.indexOf('domicilio') !== -1) return;
+  try { if(localStorage.getItem('ctaWaDismissed') === 'true') return; } catch(e) {}
+  var el = document.createElement('div');
+  el.className = 'cta-strip';
+  el.innerHTML = '<button class="cs-close" aria-label="Cerrar" onclick="(function(b){b.parentNode.classList.remove(\'cs-visible\');setTimeout(function(){b.parentNode.remove()},400);try{localStorage.setItem(\'ctaWaDismissed\',\'true\')}catch(e){}})(this.parentNode)">×</button>'
+    + '<p>¿Tienes a alguien en casa que no puede ir al dentista?</p>'
+    + '<a href="https://wa.me/34669033565" target="_blank" rel="noopener">→ Escríbeme por WhatsApp</a>';
+  document.body.appendChild(el);
+  setTimeout(function(){ el.classList.add('cs-visible'); }, 4000);
+})();

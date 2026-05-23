@@ -159,6 +159,15 @@ p:last-child{margin-bottom:0}
 .ck-link{color:rgba(255,255,255,.55);font-size:13px;text-decoration:underline;white-space:nowrap;text-underline-offset:3px}
 .ck-link:hover{color:rgba(255,255,255,.85)}
 
+/* CTA strip flotante */
+.cta-strip{position:fixed;bottom:20px;left:20px;background:var(--ink);color:#fff;border-radius:16px;padding:16px 18px 14px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.28);z-index:4500;transform:translateX(calc(-100% - 40px));transition:transform .45s cubic-bezier(.34,1.28,.64,1)}
+.cta-strip.cs-visible{transform:translateX(0)}
+.cta-strip p{margin:0 0 10px;font-size:13px;line-height:1.5;color:rgba(255,255,255,.88);padding-right:16px}
+.cta-strip a{color:#10B981;font-weight:800;font-size:13px;text-decoration:none}
+.cta-strip a:hover{text-decoration:underline}
+.cs-close{position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;line-height:1;cursor:pointer;padding:0}
+.cs-close:hover{color:#fff}
+
 /* Responsive */
 @media (max-width:980px){
   .grid.cols-3,.grid.cols-2{grid-template-columns:1fr}

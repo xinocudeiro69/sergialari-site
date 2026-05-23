@@ -42,52 +42,29 @@
 <section class="section">
 <div class="container">
 <div class="panel">
-<div class="grid cols-2" style="align-items:center;gap:32px">
+<div class="grid cols-2" style="align-items:center;gap:36px">
 <div class="img-frame">
 <img alt="Sergi Alari, dentista" class="img-tone" src="assets/img/foto-sergi.jpg"/>
 </div>
 <div>
 <h1 style="margin-top:0">Hola, soy Sergi</h1>
-<p class="lead"><em>"Cuido tu sonrisa, estés donde estés."</em></p>
-<p>Odontólogo en Tarragona con más de 20 años de experiencia. Trabajo en mi clínica <strong>32 Dents</strong> y también ofrezco atención a domicilio para personas mayores o con movilidad reducida.</p>
-<p>Me gusta explicar sin prisas, responder todas las dudas y que cada persona salga con todo claro.</p>
-<p style="margin-top:20px">
-<a class="btn" href="domicilio.html">Dentista a domicilio</a>
-<a class="btn secondary" style="margin-left:10px" href="sobre-mi.html">Conóceme</a>
-</p>
-</div>
-</div>
-</div>
-</div>
-</section>
+<p style="color:var(--ink-70);margin-bottom:20px">Odontólogo en Tarragona con más de 20 años de experiencia. Me importa explicar bien, resolver todas las dudas y que cada persona salga con todo claro.</p>
 
-<section class="section">
-<div class="container">
-<h2 style="text-align:center;margin:0 0 20px;position:relative;z-index:1">Mis servicios</h2>
-<div class="grid cols-2">
-<div class="card" style="display:flex;flex-direction:column;gap:12px">
-<div style="font-size:40px">🏠</div>
-<h3 style="margin:0">Dentista a domicilio</h3>
-<p style="flex:1">Para personas mayores, con movilidad reducida o que simplemente prefieren no desplazarse. Llevo el equipo portátil a tu casa y realizo revisiones, limpiezas y cuidado de prótesis con toda la seguridad.</p>
-<a class="btn" href="domicilio.html">Ver el servicio</a>
+<div style="display:flex;border:2px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:20px">
+<button id="tab-dom" onclick="showService('dom')" style="flex:1;padding:11px 14px;border:none;cursor:pointer;font-weight:800;font-size:14px;font-family:inherit;background:var(--accent);color:#fff;transition:background .18s,color .18s">🏠 A domicilio</button>
+<button id="tab-cli" onclick="showService('cli')" style="flex:1;padding:11px 14px;border:none;cursor:pointer;font-weight:800;font-size:14px;font-family:inherit;background:transparent;color:var(--ink);transition:background .18s,color .18s">🦷 En clínica</button>
 </div>
-<div class="card" style="display:flex;flex-direction:column;gap:12px">
-<div style="font-size:40px">🦷</div>
-<h3 style="margin:0">En clínica (32 Dents)</h3>
-<p style="flex:1">Tratamientos completos en Tarragona: revisiones, limpiezas, ortodoncia, implantes, blanqueamiento y más. Un espacio sereno donde el trato humano es lo primero.</p>
+
+<div id="svc-dom">
+<p>Para personas mayores o con movilidad reducida. Llevo el equipo portátil a tu casa y realizo revisiones, limpiezas y cuidado de prótesis con plenas garantías de seguridad e higiene.</p>
+<a class="btn" href="domicilio.html">Ver el servicio a domicilio</a>
+</div>
+<div id="svc-cli" style="display:none">
+<p>Tratamientos completos en <strong>32 Dents</strong>, Tarragona. Revisiones, ortodoncia, implantes, blanqueamiento y más en un espacio sereno donde el trato humano es lo primero.</p>
 <a class="btn secondary" href="clinica.html">Ver la clínica</a>
 </div>
 </div>
 </div>
-</section>
-
-<section class="section">
-<div class="container">
-<div class="cta-box">
-<h2>¿Tienes a alguien en casa que no puede ir al dentista?</h2>
-<p>No hace falta renunciar a la salud bucodental. Llevo el equipo a donde estés y me adapto a cada situación.</p>
-<a class="btn-white" href="https://wa.me/34669033565" target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
-<a class="btn-white" style="margin-left:10px;background:transparent;color:#fff;border-color:rgba(255,255,255,.5)" href="domicilio.html">Saber más</a>
 </div>
 </div>
 </section>
@@ -179,5 +156,18 @@
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script>
+function showService(svc){
+  var isDom = svc === 'dom';
+  document.getElementById('svc-dom').style.display = isDom ? '' : 'none';
+  document.getElementById('svc-cli').style.display = isDom ? 'none' : '';
+  var tDom = document.getElementById('tab-dom');
+  var tCli = document.getElementById('tab-cli');
+  tDom.style.background = isDom ? 'var(--accent)' : 'transparent';
+  tDom.style.color = isDom ? '#fff' : 'var(--ink)';
+  tCli.style.background = isDom ? 'transparent' : 'var(--accent)';
+  tCli.style.color = isDom ? 'var(--ink)' : '#fff';
+}
+</script>
 </body>
 </html>

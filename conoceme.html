@@ -38,55 +38,37 @@
 </header>
 
 <div class="page">
-
 <section class="section">
 <div class="container">
 <div class="panel">
-<div class="grid cols-2" style="align-items:center;gap:36px">
-<div class="img-frame">
-<img alt="Sergi Alari trabajando" class="img-tone" src="assets/img/trabajo_2.jpg"/>
-</div>
+<div class="grid cols-2" style="align-items:flex-start;gap:36px">
+
 <div>
-<h1 style="margin-top:0">Hola, me alegra que estés aquí</h1>
-<p class="lead">Si te apuntas, te mando consejos prácticos sobre higiene dental, hábitos y todo lo que me pregunta la gente. Sin spam, sin rollos de marketing.</p>
-<p>Solo escribo cuando tengo algo que valga la pena contar. Puedes darte de baja cuando quieras.</p>
-<div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
-<div class="card" style="flex:1;min-width:140px;padding:14px 16px">
-<div style="font-size:28px;margin-bottom:6px">📩</div>
-<strong style="font-size:14px">Consejos reales</strong>
-<p class="small" style="margin-top:4px">Lo que funciona de verdad, sin jerga médica.</p>
+<div class="img-frame">
+<img alt="Sergi Alari en consulta" class="img-tone" src="assets/img/trabajo_2.jpg"/>
 </div>
-<div class="card" style="flex:1;min-width:140px;padding:14px 16px">
-<div style="font-size:28px;margin-bottom:6px">🚫</div>
-<strong style="font-size:14px">Sin spam</strong>
-<p class="small" style="margin-top:4px">Un email de vez en cuando, nunca a diario.</p>
+<div style="margin-top:16px">
+<h1 style="margin-top:0;font-size:28px">Hola, me alegra que estés aquí</h1>
+<p style="color:var(--ink-70)">Si te apuntas, te mando consejos prácticos sobre higiene dental y hábitos — lo que me pregunta la gente en consulta, sin tecnicismos.</p>
+<p style="color:var(--ink-70)">Solo escribo cuando tengo algo que valga la pena. Puedes darte de baja cuando quieras.</p>
 </div>
 </div>
+
+<div>
+<div id="form-area">
+<div id="step-cm" style="margin-bottom:16px"></div>
+<div id="nav-cm" style="display:flex;gap:10px">
+<button class="btn secondary" disabled id="back-cm">Atrás</button>
+<button class="btn" id="next-cm">Siguiente</button>
 </div>
+</div>
+<div id="res-cm" style="display:none"></div>
+</div>
+
 </div>
 </div>
 </div>
 </section>
-
-<section class="section">
-<div class="container">
-<div class="panel" style="max-width:640px;margin:0 auto">
-<h2 style="margin-top:0">Cuatro preguntas rápidas</h2>
-<p style="color:var(--ink-70);margin-bottom:20px">Para enviarte contenido que tenga sentido para ti.</p>
-<div id="step"></div>
-<div id="form-nav" style="display:flex;gap:10px;margin-top:16px">
-<button class="btn secondary" disabled id="back">Atrás</button>
-<button class="btn" id="next">Siguiente</button>
-</div>
-<div id="res" style="display:none;margin-top:20px"></div>
-</div>
-</div>
-</section>
-
-<a aria-label="Escribir por WhatsApp" class="float-wa" href="https://wa.me/34669033565" rel="noopener" target="_blank">
-<img alt="WhatsApp" src="assets/img/whatsapp_icon.png"/>
-</a>
-
 </div>
 
 <footer class="footer-dark">
@@ -108,103 +90,68 @@
 
 <script src="assets/js/main.js"></script>
 <script>
-var steps = [
-  {type:'text',  name:'nombre',  title:'¿Cómo te llamas?', placeholder:'Tu nombre'},
-  {type:'text',  name:'origen',  title:'¿De dónde eres?',  placeholder:'Tu ciudad o país'},
-  {type:'email', name:'email',   title:'¿Cuál es tu email?', placeholder:'tu@email.com'},
+var cmSteps = [
+  {type:'text',    name:'nombre',  title:'¿Cómo te llamas?',           ph:'Tu nombre'},
+  {type:'text',    name:'origen',  title:'¿De dónde eres?',            ph:'Tu ciudad o país'},
+  {type:'email',   name:'email',   title:'¿Cuál es tu email?',         ph:'tu@email.com'},
   {type:'consent', name:'consent', title:'¿Me dejas mandarte emails con consejos?'}
 ];
-var i = 0, ans = {};
+var cmIdx = 0, cmAns = {};
 
-function el(id){ return document.getElementById(id); }
+var iStyle = 'width:100%;padding:13px 16px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;font-family:inherit;outline:none;margin-top:4px;box-sizing:border-box';
 
-var inputStyle = 'width:100%;padding:13px 16px;border:1px solid var(--line);border-radius:12px;font-size:16px;font-family:inherit;outline:none;transition:border-color .15s';
-
-function render(){
-  var s = steps[i], html = '';
-  html += '<p style="font-size:13px;color:var(--ink-40);margin:0 0 6px">' + (i+1) + ' de ' + steps.length + '</p>';
-  html += '<h3 style="margin:0 0 14px">' + s.title + '</h3>';
+function cmRender(){
+  var s = cmSteps[cmIdx], html = '';
+  html += '<p style="font-size:12px;color:var(--ink-40);margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em">' + (cmIdx+1) + ' de ' + cmSteps.length + '</p>';
+  html += '<h3 style="margin:0 0 12px">' + s.title + '</h3>';
   if(s.type === 'text' || s.type === 'email'){
-    var v = ans[s.name] || '';
-    html += '<input id="in" type="' + (s.type === 'email' ? 'email' : 'text') + '" value="' + (v || '') + '" placeholder="' + s.placeholder + '" style="' + inputStyle + '">';
-  } else if(s.type === 'consent'){
-    var yes = ans['consent'] === true;
-    var no  = ans['consent'] === false;
-    html += '<div style="display:flex;gap:12px">';
-    html += '<div class="card" role="button" onclick="pick(true)" style="flex:1;text-align:center;cursor:pointer;' + (yes ? 'border-color:var(--accent);background:rgba(185,120,78,.07)' : '') + '"><strong>Sí, apúntame</strong></div>';
-    html += '<div class="card" role="button" onclick="pick(false)" style="flex:1;text-align:center;cursor:pointer;' + (no ? 'border-color:var(--ink-70)' : '') + '"><strong>No por ahora</strong></div>';
+    html += '<input id="cm-in" type="' + (s.type === 'email' ? 'email' : 'text') + '" value="' + (cmAns[s.name]||'') + '" placeholder="' + s.ph + '" style="' + iStyle + '">';
+  } else {
+    var yes = cmAns['consent'] === true, no = cmAns['consent'] === false;
+    html += '<div style="display:flex;gap:12px;margin-top:8px">';
+    html += '<div class="card" role="button" onclick="cmPick(true)" style="flex:1;text-align:center;cursor:pointer;padding:14px;' + (yes ? 'border-color:var(--accent);background:rgba(185,120,78,.07)' : '') + '"><strong>Sí, apúntame</strong></div>';
+    html += '<div class="card" role="button" onclick="cmPick(false)" style="flex:1;text-align:center;cursor:pointer;padding:14px;' + (no ? 'border-color:var(--ink-70)' : '') + '"><strong>No por ahora</strong></div>';
     html += '</div>';
-    html += '<p class="small" style="margin-top:10px">Puedes darte de baja cuando quieras. Sin spam.</p>';
+    html += '<p class="small" style="margin-top:10px;color:var(--ink-70)">Puedes darte de baja cuando quieras.</p>';
   }
-  el('step').innerHTML = html;
-  el('back').disabled = (i === 0);
-  el('next').textContent = (i === steps.length - 1) ? 'Finalizar' : 'Siguiente';
-  if(s.type === 'text' || s.type === 'email'){
-    var inp = el('in');
-    if(inp){ inp.focus(); inp.addEventListener('keydown', function(e){ if(e.key === 'Enter') el('next').click(); }); }
-  }
+  document.getElementById('step-cm').innerHTML = html;
+  document.getElementById('back-cm').disabled = (cmIdx === 0);
+  document.getElementById('next-cm').textContent = (cmIdx === cmSteps.length - 1) ? 'Finalizar' : 'Siguiente';
+  var inp = document.getElementById('cm-in');
+  if(inp){ inp.focus(); inp.addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('next-cm').click(); }); }
 }
 
-function pick(val){
-  ans['consent'] = val;
-  render();
+function cmPick(val){
+  cmAns['consent'] = val;
+  cmRender();
 }
 
-function validate(){
-  var s = steps[i];
-  if(s.type === 'text'){
-    var v = el('in').value.trim();
-    if(!v){ alert('Escribe una respuesta.'); return false; }
-    ans[s.name] = v; return true;
-  }
-  if(s.type === 'email'){
-    var v = el('in').value.trim();
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ alert('Escribe un email válido.'); return false; }
-    ans[s.name] = v; return true;
-  }
-  if(s.type === 'consent'){
-    if(ans['consent'] !== true){ alert('Necesito tu permiso para escribirte.'); return false; }
-    return true;
-  }
+function cmValidate(){
+  var s = cmSteps[cmIdx];
+  if(s.type === 'text'){ var v = document.getElementById('cm-in').value.trim(); if(!v){ alert('Escribe una respuesta.'); return false; } cmAns[s.name]=v; return true; }
+  if(s.type === 'email'){ var v = document.getElementById('cm-in').value.trim(); if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ alert('Escribe un email válido.'); return false; } cmAns[s.name]=v; return true; }
+  if(s.type === 'consent'){ if(cmAns['consent']!==true){ alert('Necesito tu permiso para escribirte.'); return false; } return true; }
   return true;
 }
 
-el('back').addEventListener('click', function(){
-  if(i > 0){ i--; render(); }
-});
-el('next').addEventListener('click', function(){
-  if(!validate()) return;
-  if(i < steps.length - 1){ i++; render(); }
-  else { finish(); }
-});
+document.getElementById('back-cm').addEventListener('click', function(){ if(cmIdx>0){ cmIdx--; cmRender(); } });
+document.getElementById('next-cm').addEventListener('click', function(){ if(!cmValidate()) return; if(cmIdx<cmSteps.length-1){ cmIdx++; cmRender(); } else { cmFinish(); } });
 
-async function finish(){
-  el('form-nav').style.display = 'none';
-  el('step').innerHTML = '<p style="color:var(--ink-70)">Enviando…</p>';
+async function cmFinish(){
+  document.getElementById('form-area').style.display = 'none';
   try{
-    var r = await fetch('/api/subscribe', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({nombre: ans.nombre||'', origen: ans.origen||'', email: ans.email||'', consent: true})
-    });
-    var data = await r.json();
-  } catch(e){
-    var data = {ok: false};
-  }
-  el('step').style.display = 'none';
-  var html = '<h2 style="margin:0 0 10px">¡Gracias, ' + (ans.nombre || '') + '!</h2>'
-           + '<p>Revisa tu bandeja de entrada y confirma la suscripción.</p>'
-           + '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:14px">'
-           + '<a class="btn" href="https://mail.google.com/" target="_blank" rel="noopener">Abrir Gmail</a>'
-           + '<a class="btn secondary" href="https://outlook.live.com/mail/0/" target="_blank" rel="noopener">Abrir Outlook</a>'
-           + '<a class="btn secondary" href="mailto:" target="_blank" rel="noopener">Otro gestor</a>'
-           + '</div>'
-           + '<p style="margin-top:16px"><a href="index.html">Volver al inicio →</a></p>';
-  el('res').innerHTML = html;
-  el('res').style.display = 'block';
+    await fetch('/api/subscribe', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({nombre:cmAns.nombre||'', origen:cmAns.origen||'', email:cmAns.email||'', consent:true}) });
+  }catch(e){}
+  var r = document.getElementById('res-cm');
+  r.innerHTML = '<div class="card" style="text-align:center;padding:28px 24px">'
+    + '<div style="font-size:48px;margin-bottom:12px">✉️</div>'
+    + '<h3 style="margin:0 0 8px">¡Gracias, ' + (cmAns.nombre||'') + '!</h3>'
+    + '<p style="color:var(--ink-70);margin:0">Revisa tu correo y confirma tu suscripción.</p>'
+    + '</div>';
+  r.style.display = 'block';
 }
 
-render();
+cmRender();
 </script>
 </body>
 </html>

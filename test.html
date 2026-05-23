@@ -38,44 +38,36 @@
 </header>
 
 <div class="page">
-
 <section class="section">
 <div class="container">
 <div class="panel">
-<div class="grid cols-2" style="align-items:center;gap:32px">
+<div class="grid cols-2" style="align-items:flex-start;gap:36px">
+
 <div>
-<h1 style="margin-top:0">¿Cómo está tu higiene dental?</h1>
-<p class="lead">6 preguntas, menos de 1 minuto. Al final te digo cómo estás y qué puedes mejorar.</p>
-<p>Lo hago con mis pacientes en consulta. Aquí lo puedes hacer tú solo, gratis y sin compromiso.</p>
-<div style="display:flex;gap:20px;margin-top:16px;flex-wrap:wrap">
-<div style="display:flex;align-items:center;gap:8px;color:var(--ink-70)">
-<span style="font-size:22px">⏱</span><span class="small">Menos de 1 minuto</span>
-</div>
-<div style="display:flex;align-items:center;gap:8px;color:var(--ink-70)">
-<span style="font-size:22px">🆓</span><span class="small">Completamente gratis</span>
-</div>
-<div style="display:flex;align-items:center;gap:8px;color:var(--ink-70)">
-<span style="font-size:22px">💬</span><span class="small">Sin registro ni email</span>
-</div>
-</div>
-</div>
 <div class="img-frame">
 <img alt="Sergi Alari en consulta" class="img-tone" src="assets/img/domicilio_sergi.jpg"/>
 </div>
+<div style="margin-top:16px">
+<h1 style="margin-top:0;font-size:28px">¿Cómo está tu higiene dental?</h1>
+<p style="color:var(--ink-70)">6 preguntas, menos de 1 minuto. Al final te explico exactamente qué estás haciendo bien y qué puedes mejorar.</p>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+<div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-70)"><span>✅</span> Resultado inmediato y personalizado</div>
+<div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-70)"><span>🆓</span> Completamente gratis</div>
+<div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-70)"><span>🔒</span> Sin registro ni email</div>
 </div>
 </div>
 </div>
-</section>
 
-<section class="section">
-<div class="container">
-<div class="panel" style="max-width:640px;margin:0 auto">
-<div class="card" id="step-box"></div>
+<div>
+<div class="card" id="step-box" style="min-height:120px"></div>
 <div id="nav-box" style="margin-top:12px;display:flex;gap:8px">
 <button class="btn secondary" disabled id="btn-back" onclick="testBack()">Atrás</button>
 <button class="btn" id="btn-next" onclick="testNext()">Siguiente</button>
 </div>
-<div class="card" id="resultado" style="display:none;margin-top:14px"></div>
+<div id="resultado" style="display:none;margin-top:14px"></div>
+</div>
+
+</div>
 </div>
 </div>
 </section>
@@ -83,7 +75,6 @@
 <a aria-label="Escribir por WhatsApp" class="float-wa" href="https://wa.me/34669033565" rel="noopener" target="_blank">
 <img alt="WhatsApp" src="assets/img/whatsapp_icon.png"/>
 </a>
-
 </div>
 
 <footer class="footer-dark">
