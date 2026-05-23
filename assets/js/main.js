@@ -43,12 +43,13 @@ function initFaqAccordion(){
 }
 document.addEventListener('DOMContentLoaded', initFaqAccordion);
 
-// Shrinking header on scroll
+// Shrinking header on scroll — dos umbrales distintos evitan el parpadeo
 function headerShrink(){
   var h=document.querySelector('.header');
   if(!h) return;
-  if(window.scrollY>10){ h.classList.add('shrink'); }
-  else{ h.classList.remove('shrink'); }
+  var shrunk=h.classList.contains('shrink');
+  if(!shrunk && window.scrollY>60){ h.classList.add('shrink'); }
+  else if(shrunk && window.scrollY<40){ h.classList.remove('shrink'); }
 }
 window.addEventListener('scroll', headerShrink);
 window.addEventListener('load', headerShrink);
