@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Conóceme — Sergi Alari</title>
+<style>
+    html, body { height:100%; }
+    body { margin:0; background:#fff; color:#111; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    .header, .footer, .footer-dark { display:none !important; }
+    #x { position:fixed; top:16px; right:16px; font-size:32px; text-decoration:none; color:#111; opacity:.85; z-index:10; }
+    #x:hover { opacity:1; }
+    #wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 20px; }
+    #box  { width:100%; max-width:720px; }
+    .q { font-size:2rem; line-height:1.2; margin:0 0 12px; }
+    .inp { font-size:1.05rem; padding:12px 14px; width:100%; border:1px solid #ddd; border-radius:10px; }
+    #choices { display:flex; gap:10px; }
+    .choice { flex:1; border:1px solid #ddd; border-radius:10px; padding:12px 14px; text-align:center; cursor:pointer; user-select:none; }
+    .choice[aria-selected="true"] { border-color:#111; box-shadow:0 0 0 3px rgba(0,0,0,.06); }
+    #nav { margin-top:18px; display:flex; gap:10px; }
+    .btn { appearance:none; border:1px solid #111; background:#111; color:#fff; border-radius:10px; padding:12px 18px; font-size:1rem; cursor:pointer; }
+    .btn.secondary { background:#fff; color:#111; }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .msg { margin-top:16px; padding:12px 14px; border:1px solid #e5e5e5; border-radius:10px; background:#fafafa; }
+    .mail-links { display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+    .link-btn { display:inline-block; padding:10px 12px; border:1px solid #111; border-radius:10px; text-decoration:none; color:#111; background:#fff; }
+    @media (max-width:520px){ .q{font-size:1.6rem;} #choices{flex-direction:column;} }
+  </style>
+
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon.png">
+</head>
+<body>
+<a aria-label="Cerrar" href="index.html" id="x">×</a>
+<div id="wrap">
+<div id="box">
+<div id="step"></div>
+<div id="nav">
+<button class="btn secondary" disabled="" id="back">Atrás</button>
+<button class="btn" id="next">Siguiente</button>
+</div>
+<div class="msg" id="res" style="display:none;"></div>
+</div>
+</div>
+<script>
+    var steps=[
+      {type:"text",   name:"nombre",  title:"¿Cómo te llamas?"},
+      {type:"text",   name:"origen",  title:"¿De dónde eres?"},
+      {type:"email",  name:"email",   title:"¿Me dejas tu email?"},
+      {type:"consent",name:"consent", title:"¿Me dejas mandarte emails con hábitos y cosas útiles?"}
+    ];
+    var i=0, ans={};
+
+    function el(id){return document.getElementById(id);}
+
+    function render(){
+      var s=steps[i], html='';
+      html += '<h1 class="q">'+s.title+'</h1>';
+      if(s.type==='text' || s.type==='email'){
+        var t=(s.type==='email')?'email':'text';
+        var v=ans[s.name]||'';
+        html += '<input class="inp" type="'+t+'" id="in" value="'+(v||'')+'">';
+      }else if(s.type==='consent'){
+        var v=!!ans[s.name];
+        html += '<div id="choices">'
+              +   '<div class="choice" role="button" aria-selected="'+(v?'true':'false')+'" onclick="pick(true)">Sí</div>'
+              +   '<div class="choice" role="button" aria-selected="'+(!v?'true':'false')+'" onclick="pick(false)">No</div>'
+              + '</div>';
+      }
+      el('step').innerHTML = html;
+      el('back').disabled = (i===0);
+      el('next').textContent = (i===steps.length-1) ? 'Finalizar' : 'Siguiente';
+    }
+
+    function pick(val){
+      ans['consent']=val;
+      document.querySelectorAll('.choice').forEach(function(it){
+        var sel = (it.textContent.trim()==='Sí') ? val : !val;
+        it.setAttribute('aria-selected', sel?'true':'false');
+      });
+    }
+
+    function validate(){
+      var s=steps[i];
+      if(s.type==='text'){
+        var v=el('in').value.trim();
+        if(!v){ alert('Escribe una respuesta.'); return false; }
+        ans[s.name]=v; return true;
+      }
+      if(s.type==='email'){
+        var v=el('in').value.trim();
+        var ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        if(!ok){ alert('Escribe un email válido.'); return false; }
+        ans[s.name]=v; return true;
+      }
+      if(s.type==='consent'){
+        if(ans['consent']!==true){ alert('Necesito tu permiso para escribirte.'); return false; }
+        return true;
+      }
+      return true;
+    }
+
+    document.addEventListener('click', function(e){
+      if(e.target && e.target.id==='back'){ if(i>0){ i--; render(); } }
+      if(e.target && e.target.id==='next'){
+        if(!validate()) return;
+        if(i<steps.length-1){ i++; render(); }
+        else { finish(); }
+      }
+    });
+
+    async function finish(){
+      // Enviar a backend (Brevo DOI)
+      try{
+        var r = await fetch('/api/subscribe', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            nombre: ans.nombre || '',
+            origen: ans.origen || '',
+            email:  ans.email  || '',
+            consent: !!ans.consent
+          })
+        });
+        var data = await r.json();
+      }catch(e){
+        var data = {ok:false, error:'network'};
+      }
+
+      // Mensaje final + botones para abrir correo
+      var html = '<h2 style="margin:0 0 8px">¡Gracias!</h2>'
+               + '<p>Revisa tu email y confirma tu suscripción.</p>'
+               + '<div class="mail-links">'
+               +   '<a class="link-btn" href="https://mail.google.com/" target="_blank" rel="noopener">Abrir Gmail</a>'
+               +   '<a class="link-btn" href="https://outlook.live.com/mail/0/" target="_blank" rel="noopener">Abrir Outlook</a>'
+               +   '<a class="link-btn" href="https://mail.yahoo.com/" target="_blank" rel="noopener">Abrir Yahoo</a>'
+               +   '<a class="link-btn" href="https://www.icloud.com/mail" target="_blank" rel="noopener">Abrir iCloud</a>'
+               +   '<a class="link-btn" href="mailto:" target="_blank" rel="noopener">Abrir tu gestor de correo</a>'
+               + '</div>'
+               + '<p style="margin-top:8px"><a class="btn" href="index.html">Volver al inicio</a></p>';
+
+      if(!data || !data.ok){
+        html = '<h2 style="margin:0 0 8px">Gracias, ' + (ans.nombre||'') + '.</h2>'
+             + '<p>Te hemos registrado. Si no te llega el email en unos minutos, revisa SPAM o contáctame.</p>'
+             + html;
+      }
+
+      el('res').innerHTML = html;
+      el('res').style.display='block';
+      el('step').style.display='none';
+      el('nav').style.display='none';
+    }
+
+    window.addEventListener('load', render);
+  </script>
+</body>
+</html>

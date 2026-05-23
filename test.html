@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Sergi Alari — Dentista en Tarragona</title>
+<meta content="Dentista en Tarragona con servicio a domicilio. Trato cercano y explicaciones claras." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&amp;family=Manrope:wght@800;900&amp;display=swap" rel="stylesheet"/>
+<link href="assets/css/style.css" rel="stylesheet"/>
+
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon.png">
+</head>
+<body>
+<header class="header">
+<div class="container nav">
+<a class="brand" href="index.html">Sergi Alari</a>
+<nav>
+<a href="sobre-mi.html">Sobre mí</a>
+<a href="clinica.html">En clínica</a>
+<a href="domicilio.html">A domicilio</a>
+<a href="conoceme.html">Conóceme</a>
+</nav>
+<div class="socials">
+<a aria-label="YouTube" href="https://www.youtube.com/@sergialari" rel="noopener" target="_blank">
+<svg viewbox="0 0 24 24"><path d="M23.5 6.2a3.6 3.6 0 0 0-2.6-2.6C18.9 3 12 3 12 3s-6.9 0-8.9.6A3.6 3.6 0 0 0 .5 6.2 37.6 37.6 0 0 0 0 12a37.6 37.6 0 0 0 .5 5.8 3.6 3.6 0 0 0 2.6 2.6C5.1 21 12 21 12 21s6.9 0 8.9-.6a3.6 3.6 0 0 0 2.6-2.6A37.6 37.6 0 0 0 24 12a37.6 37.6 0 0 0-.5-5.8zM9.8 15.5v-7l6.5 3.5-6.5 3.5z"></path></svg>
+</a>
+<a aria-label="Instagram" href="https://www.instagram.com/sergialari" rel="noopener" target="_blank">
+<svg viewbox="0 0 24 24"><path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3.2A5.8 5.8 0 1 0 17.8 13 5.8 5.8 0 0 0 12 7.2zm0 2a3.8 3.8 0 1 1-3.8 3.8A3.8 3.8 0 0 1 12 9.2zM18 6.5a1 1 0 1 0 1 1 1 1 0 0 0-1-1z"></path></svg>
+</a>
+<a aria-label="Facebook" href="https://www.facebook.com/sergialari" rel="noopener" target="_blank">
+<svg viewbox="0 0 24 24"><path d="M13.5 22v-8h2.7l.4-3h-3.1V8.2c0-.9.3-1.5 1.6-1.5H17V4.1c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8V11H8v3h3.1v8h2.4z"></path></svg>
+</a>
+</div>
+</div>
+</header>
+<div class="page">
+<section class="section" id="test">
+<div class="container">
+<div class="panel" id="test-panel">
+<h1 style="margin-top:0">Test gratuito de higiene dental</h1>
+<p>Responde en <strong>menos de 1 minuto</strong>. Verás tu resultado y recomendaciones al final.</p>
+<div class="card" id="step-box"></div>
+<div id="nav-box" style="margin-top:12px;display:flex;gap:8px">
+<button class="btn secondary" disabled="" id="btn-back" onclick="testBack()">Atrás</button>
+<button class="btn" id="btn-next" onclick="testNext()">Siguiente</button>
+</div>
+<div class="card" id="resultado" style="display:none;margin-top:14px"></div>
+</div>
+</div>
+</section>
+</div>
+<script>
+var steps=[
+ {q:"¿Te cepillas los dientes al menos 2 veces al día?", name:"cepillados"},
+ {q:"¿Usas hilo dental o irrigador al menos 4 días por semana?", name:"interprox"},
+ {q:"¿Cepillas o limpias la lengua de forma habitual?", name:"lengua"},
+ {q:"¿Evitas dulces/bebidas azucaradas entre horas con frecuencia?", name:"azucar", invert:true},
+ {q:"¿Tu cepillo/cabezal tiene menos de 3 meses de uso?", name:"recambio"},
+ {q:"¿Revisión o limpieza profesional en el último año?", name:"revision"}
+];
+var idx=0; var answers={};
+function render(){
+  var s=steps[idx];
+  var html='<p><strong>'+(idx+1)+'.</strong> '+s.q+'</p>';
+  html+='<label><input type="radio" name="ans" value="si"> Sí</label>';
+  html+='<label style="margin-left:14px"><input type="radio" name="ans" value="no"> No</label>';
+  document.getElementById('step-box').innerHTML=html;
+  document.getElementById('btn-back').disabled=(idx===0);
+  document.getElementById('btn-next').textContent=(idx===steps.length-1)?'Ver resultado':'Siguiente';
+  if(answers[s.name]){
+    var sel=document.querySelector('input[name="ans"][value="'+answers[s.name]+'"]');
+    if(sel) sel.checked=true;
+  }
+}
+function testNext(){
+  var checked=document.querySelector('input[name="ans"]:checked');
+  if(!checked){ alert('Selecciona una respuesta'); return; }
+  var s=steps[idx]; answers[s.name]=checked.value;
+  if(idx<steps.length-1){ idx++; render(); }
+  else { calcularResultado(); }
+}
+function testBack(){ if(idx>0){ idx--; render(); } }
+function calcularResultado(){
+  var puntos=0;
+  for(var i=0;i<steps.length;i++){
+    var s=steps[i]; var v=answers[s.name]||'no';
+    var positivo = s.invert ? (v==='no') : (v==='si');
+    if(positivo) puntos++;
+  }
+  var nivel='', msg='';
+  if(puntos>=5){nivel='Muy bien'; msg='Tu rutina va por buen camino. Mantén hábitos y revisa cada 6–12 meses.';}
+  else if(puntos>=3){nivel='Mejorable'; msg='Refuerza hilo/irrigador, limpieza de lengua y recambios; reduce azúcares.';}
+  else{nivel='Necesita cambios'; msg='Te vendrá bien un repaso de hábitos y quizá una limpieza profesional.';}
+  var html='<h2 style="margin:0">Resultado: '+nivel+'</h2><p>'+msg+'</p>' +
+           '<p><a class="btn" href="conoceme.html">Recibir consejos por email</a> ' +
+           '<a class="btn secondary" href="clinica.html">Pedir cita en clínica</a> ' +
+           '<a class="btn-accent" target="_blank" rel="noopener" href="https://wa.me/34669033565">Escribir por WhatsApp</a></p>';
+  var box=document.getElementById('resultado'); box.innerHTML=html; box.style.display='block'; box.scrollIntoView({behavior:'smooth'});
+  document.getElementById('step-box').style.display='none';
+  document.getElementById('nav-box').style.display='none';
+}
+window.addEventListener('load', render);
+</script>
+<script>
+function calcularTest(e){e.preventDefault();
+  var total=6, puntos=0;
+  for(var i=1;i<=total;i++){var el=document.querySelector('input[name="q'+i+'"]:checked'); if(el && el.value==='si') puntos++;}
+  var nivel='', msg='';
+  if(puntos>=5){nivel='Muy bien'; msg='Tu rutina va por buen camino. Mantén hábitos y revisa cada 6-12 meses.';}
+  else if(puntos>=3){nivel='Mejorable'; msg='Hay puntos a reforzar: hilo/irrigador, lengua, recambios y reducir azúcar.';}
+  else{nivel='Necesita cambios'; msg='Te vendrá bien un repaso completo de hábitos y quizá una limpieza profesional.';}
+  var html='<h2 style="margin:0">Resultado: '+nivel+'</h2><p>'+msg+'</p>' +
+           '<p><a class="btn" href="conoceme.html">Recibir consejos por email</a> ' +
+           '<a class="btn secondary" href="clinica.html">Pedir cita en clínica</a> ' +
+           '<a class="btn secondary" target="_blank" rel="noopener" href="https://wa.me/34669033565">Escribir por WhatsApp</a></p>';
+  var box=document.getElementById('resultado'); box.innerHTML=html; box.style.display='block'; box.scrollIntoView({behavior:'smooth'});
+  return false;
+}
+</script>
+</body>
+</html>
