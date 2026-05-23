@@ -1,60 +1,139 @@
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  var c = document.getElementById('cookie');
-  if(!c) return;
+/* ===== Cookie banner (inyectado en todas las páginas) ===== */
+(function(){
   var accepted = false;
-  try{ accepted = localStorage.getItem('cookieConsent')==='true'; }catch(e){}
-  if(accepted) return;
-  c.style.display = 'block';
-  var btnAcept = document.getElementById('cookie-accept');
-  var btnConf  = document.getElementById('cookie-config');
-  function accept(){
-    c.style.display = 'none';
-    try{ localStorage.setItem('cookieConsent','true'); }catch(e){}
-  }
-  if(btnAcept) btnAcept.onclick = accept;
-  if(btnConf)  btnConf.onclick  = accept;
-});
-function showStep(n){['step-1','step-2','step-3','step-done'].forEach(id=>{const el=document.getElementById(id); if(el) el.style.display='none';}); const t=document.getElementById('step-'+n); if(t) t.style.display='block';}
-function nextStep(s){ if(s===1){if(!document.getElementById('name').value.trim()) return alert('Pon tu nombre 🙂'); showStep(2);} if(s===2){if(!document.getElementById('location').value.trim()) return alert('Dime de dónde eres 🙂'); showStep(3);} }
-function prevStep(s){ if(s===2){showStep(1)} if(s===3){showStep(2)} }
-function submitForm(){ const name=document.getElementById('name').value.trim(); const loc=document.getElementById('location').value.trim(); const email=document.getElementById('email').value.trim(); const ok=document.getElementById('consent').checked; if(!email) return alert('Necesito tu e‑mail'); if(!ok) return alert('Debes aceptar el permiso para enviarte el regalo'); document.getElementById('out-email').textContent=email; document.getElementById('out-name').textContent=name; document.getElementById('out-loc').textContent=loc; showStep('done'); }
-document.addEventListener('DOMContentLoaded', ()=>{
-  ['name','location','email'].forEach((id,i)=>{
-    const el=document.getElementById(id);
-    if(el){ el.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); if(i===0) nextStep(1); else if(i===1) nextStep(2); else submitForm(); } }); }
+  try { accepted = localStorage.getItem('cookieConsent') === 'true'; } catch(e) {}
+  if (accepted) return;
+
+  var el = document.createElement('div');
+  el.id = 'cookie-banner';
+  el.innerHTML =
+    '<div class="ck-inner">' +
+      '<p class="ck-text">Usamos únicamente <strong>cookies técnicas</strong> imprescindibles para el funcionamiento de esta web. No rastreamos ni cedemos datos personales.</p>' +
+      '<div class="ck-btns">' +
+        '<button id="ck-accept">Aceptar</button>' +
+        '<a href="privacidad.html" class="ck-link">Más información</a>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(el);
+
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){ el.classList.add('ck-visible'); });
   });
-});
 
-function openLightbox(src, alt){ const o=document.getElementById('lb'); if(!o) return; const img=document.getElementById('lb-img'); img.src=src; img.alt=alt||''; o.classList.add('active'); document.addEventListener('keydown', escClose); }
-function closeLightbox(){ const o=document.getElementById('lb'); if(!o) return; o.classList.remove('active'); document.removeEventListener('keydown', escClose); }
-function escClose(e){ if(e.key==='Escape') closeLightbox(); }
+  document.getElementById('ck-accept').onclick = function(){
+    el.classList.remove('ck-visible');
+    el.classList.add('ck-hiding');
+    setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 480);
+    try { localStorage.setItem('cookieConsent', 'true'); } catch(e) {}
+  };
+})();
 
-function initFaqAccordion(){
-  const root=document.getElementById('faq');
-  if(!root) return;
-  root.querySelectorAll('details').forEach(det=>{
-    // wrap non-summary nodes into .faq-content if not present
-    let content=det.querySelector('.faq-content');
-    if(!content){
-      content=document.createElement('div'); content.className='faq-content';
-      const toMove=[]; det.childNodes.forEach(n=>{ if(!(n.tagName && n.tagName.toLowerCase()==='summary')) toMove.append?n:null; });
-      // Fallback move: gather all nodes except first summary
-      const nodes=[]; for(let i=0;i<det.childNodes.length;i++){ nodes.push(det.childNodes[i]); }
-      for(let i=0;i<nodes.length;i++){ const n=nodes[i]; if(!(n.tagName && n.tagName.toLowerCase()==='summary')) { content.appendChild(n); } }
-      det.appendChild(content);
-    }
-  });
-}
-document.addEventListener('DOMContentLoaded', initFaqAccordion);
-
-// Shrinking header on scroll — dos umbrales distintos evitan el parpadeo
+/* ===== Header shrink en scroll (con histéresis para evitar parpadeo) ===== */
 function headerShrink(){
-  var h=document.querySelector('.header');
-  if(!h) return;
-  var shrunk=h.classList.contains('shrink');
-  if(!shrunk && window.scrollY>60){ h.classList.add('shrink'); }
-  else if(shrunk && window.scrollY<40){ h.classList.remove('shrink'); }
+  var h = document.querySelector('.header');
+  if (!h) return;
+  var shrunk = h.classList.contains('shrink');
+  if (!shrunk && window.scrollY > 60) { h.classList.add('shrink'); }
+  else if (shrunk && window.scrollY < 40) { h.classList.remove('shrink'); }
 }
 window.addEventListener('scroll', headerShrink);
 window.addEventListener('load', headerShrink);
+
+/* ===== Lightbox ===== */
+function openLightbox(src, alt){
+  var o = document.getElementById('lb');
+  if (!o) return;
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-img').alt = alt || '';
+  o.classList.add('active');
+  document.addEventListener('keydown', escClose);
+}
+function closeLightbox(){
+  var o = document.getElementById('lb');
+  if (!o) return;
+  o.classList.remove('active');
+  document.removeEventListener('keydown', escClose);
+}
+function escClose(e){ if (e.key === 'Escape') closeLightbox(); }
+
+/* ===== FAQ accordion ===== */
+function initFaqAccordion(){
+  var root = document.getElementById('faq');
+  if (!root) return;
+  root.querySelectorAll('details').forEach(function(det){
+    if (det.querySelector('.faq-content')) return;
+    var content = document.createElement('div');
+    content.className = 'faq-content';
+    var nodes = Array.prototype.slice.call(det.childNodes);
+    nodes.forEach(function(n){
+      if (!(n.tagName && n.tagName.toLowerCase() === 'summary')) content.appendChild(n);
+    });
+    det.appendChild(content);
+  });
+}
+
+/* ===== Test gratuito ===== */
+var testSteps = [
+  {q:'¿Te cepillas los dientes al menos 2 veces al día?', name:'cepillados'},
+  {q:'¿Usas hilo dental o irrigador al menos 4 días por semana?', name:'interprox'},
+  {q:'¿Cepillas o limpias la lengua de forma habitual?', name:'lengua'},
+  {q:'¿Evitas dulces/bebidas azucaradas entre horas?', name:'azucar', invert:true},
+  {q:'¿Tu cepillo/cabezal tiene menos de 3 meses de uso?', name:'recambio'},
+  {q:'¿Revisión o limpieza profesional en el último año?', name:'revision'}
+];
+var testIdx = 0, testAnswers = {};
+
+function testRender(){
+  var box = document.getElementById('step-box');
+  if (!box) return;
+  var s = testSteps[testIdx];
+  var html = '<p><strong>' + (testIdx+1) + ' de ' + testSteps.length + '.</strong> ' + s.q + '</p>';
+  html += '<div style="display:flex;gap:12px;margin-top:10px">';
+  html += '<label style="cursor:pointer"><input type="radio" name="ans" value="si"> Sí</label>';
+  html += '<label style="cursor:pointer;margin-left:8px"><input type="radio" name="ans" value="no"> No</label>';
+  html += '</div>';
+  box.innerHTML = html;
+  document.getElementById('btn-back').disabled = (testIdx === 0);
+  document.getElementById('btn-next').textContent = (testIdx === testSteps.length - 1) ? 'Ver resultado' : 'Siguiente';
+  if (testAnswers[s.name]){
+    var sel = document.querySelector('input[name="ans"][value="' + testAnswers[s.name] + '"]');
+    if (sel) sel.checked = true;
+  }
+}
+function testNext(){
+  var box = document.getElementById('step-box');
+  if (!box) return;
+  var checked = document.querySelector('input[name="ans"]:checked');
+  if (!checked){ alert('Selecciona una respuesta'); return; }
+  testAnswers[testSteps[testIdx].name] = checked.value;
+  if (testIdx < testSteps.length - 1){ testIdx++; testRender(); }
+  else { testResultado(); }
+}
+function testBack(){ if (testIdx > 0){ testIdx--; testRender(); } }
+function testResultado(){
+  var puntos = 0;
+  testSteps.forEach(function(s){
+    var v = testAnswers[s.name] || 'no';
+    if (s.invert ? v === 'no' : v === 'si') puntos++;
+  });
+  var nivel, msg;
+  if (puntos >= 5){ nivel = '¡Muy bien!'; msg = 'Tu rutina va por buen camino. Mantén los hábitos y revisa con tu dentista cada 6–12 meses.'; }
+  else if (puntos >= 3){ nivel = 'Mejorable'; msg = 'Hay puntos a reforzar: hilo/irrigador, limpieza de lengua y reducir azúcares entre horas.'; }
+  else { nivel = 'Necesita atención'; msg = 'Te vendría bien un repaso completo de hábitos y probablemente una limpieza profesional.'; }
+  var html = '<h2 style="margin:0 0 8px">' + nivel + '</h2><p>' + msg + '</p>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">' +
+    '<a class="btn" href="https://wa.me/34669033565" target="_blank" rel="noopener">Hablar con Sergi por WhatsApp</a> ' +
+    '<a class="btn secondary" href="clinica.html">Pedir cita en clínica</a>' +
+    '</div>';
+  var res = document.getElementById('resultado');
+  res.innerHTML = html; res.style.display = 'block';
+  res.scrollIntoView({behavior:'smooth'});
+  document.getElementById('step-box').style.display = 'none';
+  document.getElementById('nav-box').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  initFaqAccordion();
+  testRender();
+});
